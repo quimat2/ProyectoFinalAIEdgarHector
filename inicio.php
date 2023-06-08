@@ -41,13 +41,13 @@ $tipoUsuario = $row['tipo'];
   </div>
 
   <div class="cards">
-    <a href="editar_perfil.php" class="card">
+    <a href="editar.php" class="card">
         <i class="fas fa-user-edit"></i>
         <h2 class="card-title">Editar perfil</h2>
         <p class="card-description">Actualiza tus datos personales</p>
     </a>
     <?php if ($tipoUsuario == 'profesor') { ?>
-      <a href="añadir_clase.php" class="card">
+      <a href="agregar.php" class="card">
         <i class="fas fa-plus-circle"></i>
         <h2 class="card-title">Añadir clase</h2>
         <p class="card-description">Crea una nueva clase</p>
@@ -65,7 +65,7 @@ $tipoUsuario = $row['tipo'];
         <p class="card-description">Agrega calificaciones para tus estudiantes</p>
       </a>
     <?php } else { ?>
-      <a href="unirse_a_clase.php" class="card">
+      <a href="unirse.php" class="card">
         <i class="fas fa-user-plus"></i>
         <h2 class="card-title">Unirse a clase</h2>
         <p class="card-description">Únete a una clase existente</p>
