@@ -40,58 +40,7 @@ if (isset($_POST['iniciar'])) {
 <html>
 <head>
   <title>Página de inicio de sesión</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-image: url("./img/index.png");
-      background-size: cover;
-      font-family: Arial, sans-serif;
-    }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .login-box {
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 20px;
-      border-radius: 5px;
-      text-align: center;
-    }
-
-    .login-box input[type="text"],
-    .login-box input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 3px;
-    }
-
-    .login-box input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 3px;
-      background-color: #4CAF50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .login-box input[type="submit"]:hover {
-      background-color: #388E3C;
-    }
-
-    .signup-link a {
-      color: blue; 
-      text-decoration: none;
-    }
-  </style>
+  <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
   <div class="container">
