@@ -3,7 +3,7 @@ $server = 'localhost';
 $port = 3306;
 $user = 'root';
 $password = 'root';
-$db = 'plataforma';
+$db = 'proyectofinalai';
 
 try {
     $dsn = "mysql:host=$server;port=$port;dbname=$db";

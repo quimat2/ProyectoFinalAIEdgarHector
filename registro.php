@@ -1,41 +1,50 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Conectarse a la base de datos
-  $servername = "localhost";
-  $username = "root";
-  $password = "root";
-  $dbname = "plataforma";
-  
-  $conn = new mysqli($servername, $username, $password, $dbname);
-  if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-  }
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-  // Obtener los datos del formulario
-  $nombre = $_POST["nombre"];
-  $usuario = $_POST["usuario"];
-  $contraseña = $_POST["contraseña"];
-  $tipo = $_POST["tipo"];
+include_once './includes/conectar.php';
 
-  // Subir la foto de usuario
-  $foto = $_FILES["foto"]["name"];
-  $foto_tmp = $_FILES["foto"]["tmp_name"];
-  move_uploaded_file($foto_tmp, "./img/pfp".$foto);
-
-  // Insertar los datos en la base de datos
-  $sql = "INSERT INTO nombre_de_tu_tabla (usuario, password, nombre, foto, tipo)
-          VALUES ('$usuario', '$contraseña', '$nombre', '$foto', '$tipo')";
-
-  if ($conn->query($sql) === TRUE) {
-    // Registro exitoso
-    echo "Registro exitoso";
-  } else {
-    // Error en el registro
-    echo "Error en el registro: " . $conn->error;
-  }
-
-  $conn->close();
+if (isset($_SESSION['user'])) {
+  header("location:inicio.php");
+  exit;
 }
+
+// Registro de usuario
+if (isset($_POST['registro'])) {
+    $user = $_POST['user'];
+    $password = $_POST['password'];
+    $nombre = $_POST['nombre'];
+    $tipo = $_POST['tipo'];
+
+    if (empty($user) || empty($password) || empty($nombre) || empty($tipo)) {
+        echo 'Los campos están vacíos';
+    } else {
+        $consulta = $pdo->prepare('SELECT * FROM alumnos WHERE usuario = :usuario');
+        $consulta->bindParam(':usuario', $user);
+        $consulta->execute();
+
+        if ($consulta->rowCount() > 0) {
+            echo 'El usuario ya existe';
+        } else {
+            $insertar = $pdo->prepare('INSERT INTO alumnos (alumno_id, usuario, password, nombre, tipo) VALUES (NULL, :usuario, :password, :nombre, :tipo)');
+            $insertar->bindParam(':usuario', $user);
+            $insertar->bindParam(':password', $password);
+            $insertar->bindParam(':nombre', $nombre);
+            $insertar->bindParam(':tipo', $tipo);
+
+            if ($insertar->execute()) {
+                echo '¡Felicidades, has sido registrado correctamente!';
+                header("Location: inicio.php");
+                exit;
+            } else {
+                echo 'No pudiste ser registrado :(';
+            }
+        }
+    }
+}
+
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     body {
       margin: 0;
       padding: 0;
-      background-image: url("./img/escuela.png");
+      background-image: url("./img/registro.jpg");
       background-size: cover;
       font-family: Arial, sans-serif;
     }
@@ -75,10 +84,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       border-radius: 3px;
     }
 
-    .register-box input[type="file"] {
-      margin-bottom: 10px;
-    }
-
     .register-box input[type="submit"] {
       width: 100%;
       padding: 10px;
@@ -88,6 +93,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       color: white;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .register-box input[type="submit"]:hover {
+      background-color: #388E3C;
     }
 
     .login-link {
@@ -104,18 +113,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container">
     <div class="register-box">
       <h2>Registro</h2>
-      <form>
-        <input type="text" placeholder="Nombre" required><br>
-        <input type="text" placeholder="Usuario" required><br>
-        <input type="password" placeholder="Contraseña" required><br>
-        Foto: 
-        <input type="file" accept="image/*"><br>
-        <select required>
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+        <input type="text" name="nombre" placeholder="Nombre" required><br>
+        <input type="text" name="user" placeholder="Usuario" required><br>
+        <input type="password" name="password" placeholder="Contraseña" required><br>
+        <select name="tipo" required>
           <option value="" disabled selected>Selecciona una opción</option>
           <option value="profesor">Profesor</option>
           <option value="alumno">Alumno</option>
         </select><br>
-        <input type="submit" value="Registrarse">
+        <input type="submit" name="registro" value="Registrarse">
       </form>
       <div class="login-link">
         ¿Ya tienes una cuenta? <a href="./index.php">Inicia sesión</a>

@@ -1,35 +1,38 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // Conectarse a la base de datos
-  $servername = "localhost";
-  $username = "root";
-  $password = "root";
-  $dbname = "plataforma";
-  
-  $conn = new mysqli($servername, $username, $password, $dbname);
-  if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-  }
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-  // Obtener los datos del formulario
-  $usuario = $_POST["usuario"];
-  $contraseña = $_POST["contraseña"];
+include_once './includes/conectar.php';
 
-  // Verificar las credenciales de inicio de sesión
-  $sql = "SELECT * FROM nombre_de_tu_tabla WHERE usuario = '$usuario' AND password = '$contraseña'";
-  $result = $conn->query($sql);
+if (isset($_SESSION['user'])) {
+  header("Location: inicio.php");
+  exit;
+}
 
-  if ($result->num_rows == 1) {
-    // Inicio de sesión exitoso
-    session_start();
-    $_SESSION["usuario"] = $usuario;
-    header("Location: inicio.php"); // Redireccionar al usuario a la página de inicio
+if (isset($_POST['iniciar'])) {
+  $user = $_POST['user'];
+  $password = $_POST['password'];
+
+  if (empty($user) || empty($password)) {
+      echo 'Los campos están vacíos';
   } else {
-    // Credenciales inválidas
-    echo "Credenciales inválidas";
-  }
+      $consulta = $pdo->prepare('SELECT * FROM alumnos WHERE usuario = :usuario AND password = :password');
+      $consulta->bindParam(':usuario', $user);
+      $consulta->bindParam(':password', $password);
+      $consulta->execute();
 
-  $conn->close();
+      $registrado = $consulta->rowCount();
+
+      if ($registrado == 1) {
+          $_SESSION['user'] = $user;
+          header("Location: inicio.php");
+          exit;
+      } else {
+          echo "Usuario o contraseña incorrecto";
+      }
+  }
 }
 ?>
 
@@ -41,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     body {
       margin: 0;
       padding: 0;
-      background-image: url("./img/escuela.png");
+      background-image: url("./img/index.png");
       background-size: cover;
       font-family: Arial, sans-serif;
     }
@@ -80,6 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       cursor: pointer;
     }
 
+    .login-box input[type="submit"]:hover {
+      background-color: #388E3C;
+    }
+
     .signup-link a {
       color: blue; 
       text-decoration: none;
@@ -90,10 +97,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container">
     <div class="login-box">
       <h2>Iniciar sesión</h2>
-      <form>
-        <input type="text" placeholder="Usuario" required><br>
-        <input type="password" placeholder="Contraseña" required><br>
-        <input type="submit" value="Ingresar">
+      <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+        <input type="text" name="user" placeholder="Usuario" required><br>
+        <input type="password" name="password" placeholder="Contraseña" required><br>
+        <input type="submit" name="iniciar" value="Ingresar">
       </form>
       <div class="signup-link">
         ¿No tienes una cuenta? <a href="./registro.php">Regístrate</a>
