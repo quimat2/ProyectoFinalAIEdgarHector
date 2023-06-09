@@ -1,0 +1,111 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 150px;
+    height: 150px; 
+}
+
+.logo img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+.welcome {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.clases-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.clase-card {
+    width: 400px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 20px;
+}
+
+.clase-card h3 {
+    margin-top: 0;
+}
+
+.unirse-button,
+.abandonar-button {
+    display: block;
+    width: 100%;
+    height: 40px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.unirse-button:hover,
+.abandonar-button:hover {
+    background-color: #2980b9;
+}
+
+.logout-button {
+    display: block;
+    width: 120px;
+    height: 40px;
+    margin: 20px auto;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #c0392b;
+}
+
+.home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.home-button:hover {
+    background-color: #2980b9;
+}

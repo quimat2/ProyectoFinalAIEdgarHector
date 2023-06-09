@@ -59,11 +59,12 @@ $tipoUsuario = $row['tipo'];
         <p class="card-description">Crea nuevas tareas para tus estudiantes</p>
       </a>
 
-      <a href="añadir_calificaciones.php" class="card"> 
+      <a href="calificar.php" class="card"> 
         <i class="fas fa-edit"></i>
         <h2 class="card-title">Añadir calificaciones</h2>
         <p class="card-description">Agrega calificaciones para tus estudiantes</p>
       </a>
+
     <?php } else { ?>
       <a href="unirse.php" class="card">
         <i class="fas fa-user-plus"></i>
@@ -76,12 +77,7 @@ $tipoUsuario = $row['tipo'];
         <h2 class="card-title">Tareas</h2>
         <p class="card-description">Consulta tus tareas</p>
       </a>
-
-      <a href="calificaciones.php" class="card">
-        <i class="fas fa-chart-bar"></i>
-        <h2 class="card-title">Calificaciones</h2>
-        <p class="card-description">Revisa tus calificaciones</p>
-      </a>
+      
     <?php } ?>
   </div>
 

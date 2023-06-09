@@ -85,7 +85,7 @@ CREATE TABLE alumnos (
   usuario VARCHAR(255),
   password VARCHAR(255),
   nombre VARCHAR(255),
-  tipo VARCHAR(255)
+  tipo VARCHAR(255) (distingue entre alumno o profesor)
 );
 
 CREATE TABLE clases (
@@ -102,6 +102,7 @@ CREATE TABLE tareas (
   titulo VARCHAR(255),
   descripcion VARCHAR(255),
   fecha_vencimiento DATE,
+  calificacion FLOAT,
   FOREIGN KEY (clase_id) REFERENCES clases(clase_id)
 );
 
