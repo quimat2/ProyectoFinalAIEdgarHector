@@ -77,3 +77,38 @@ if (isset($_POST['cerrar'])) {
   </form>
 </body>
 </html>
+
+Estructura base de datos
+
+CREATE TABLE alumnos (
+  alumno_id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario VARCHAR(255),
+  password VARCHAR(255),
+  nombre VARCHAR(255),
+  tipo VARCHAR(255)
+);
+
+CREATE TABLE clases (
+  clase_id INT AUTO_INCREMENT PRIMARY KEY,
+  profesor_id INT,
+  nombre VARCHAR(255),
+  descripcion VARCHAR(255),
+  FOREIGN KEY (profesor_id) REFERENCES alumnos(alumno_id)
+);
+
+CREATE TABLE tareas (
+  tarea_id INT AUTO_INCREMENT PRIMARY KEY,
+  clase_id INT,
+  titulo VARCHAR(255),
+  descripcion VARCHAR(255),
+  fecha_vencimiento DATE,
+  FOREIGN KEY (clase_id) REFERENCES clases(clase_id)
+);
+
+CREATE TABLE alumnos_clases (
+  alumno_clase_id INT AUTO_INCREMENT PRIMARY KEY,
+  alumno_id INT,
+  clase_id INT,
+  FOREIGN KEY (alumno_id) REFERENCES alumnos(alumno_id),
+  FOREIGN KEY (clase_id) REFERENCES clases(clase_id)
+);

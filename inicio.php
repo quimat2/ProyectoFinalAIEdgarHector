@@ -53,7 +53,7 @@ $tipoUsuario = $row['tipo'];
         <p class="card-description">Crea una nueva clase</p>
       </a>
 
-      <a href="añadir_tareas.php" class="card"> 
+      <a href="agregar-tareas.php" class="card"> 
         <i class="fas fa-tasks"></i>
         <h2 class="card-title">Añadir tareas</h2>
         <p class="card-description">Crea nuevas tareas para tus estudiantes</p>
