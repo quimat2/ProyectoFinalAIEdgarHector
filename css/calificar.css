@@ -1,119 +1,125 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
 .header {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
 }
 
 .logo {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 150px;
-    height: 150px; 
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 150px;
+  height: 150px;
 }
 
 .logo img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
 }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .clase-lista {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .clase-item {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .clase-item .clase-nombre {
-    font-weight: bold;
-  }
-  
-  .tareas-lista {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .tareas-item {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    padding: 10px;
-  }
-  
-  .tareas-item .tarea-titulo {
-    font-weight: bold;
-  }
-  
-  .tareas-item .tarea-calificacion {
-    margin-top: 5px;
-  }
-  
-  .tareas-item .tarea-calificacion input[type="text"] {
-    width: 50px;
-  }
-  
-  .tareas-item .tarea-calificacion input[type="submit"] {
-    margin-left: 10px;
-  }
-  
-  .mensaje {
-    color: green;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .cerrar-sesion {
-    text-align: right;
-    margin-top: 20px;
-  }
-  
-  .cerrar-sesion input[type="submit"] {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-  }
+.welcome {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 
-  .home-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.tareas-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+.tarea-card {
+  width: 400px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 20px;
+}
+
+.tarea-card h2 {
+  margin-top: 0;
+}
+
+.tarea-card form {
+  margin-top: 10px;
+}
+
+.tarea-card label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.tarea-card input[type="number"] {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.tarea-card button {
+  display: block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tarea-card button:hover {
+  background-color: #2980b9;
+}
+
+.logout-button {
+  display: block;
+  width: 120px;
+  height: 40px;
+  margin: 20px auto;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+.home-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .home-button:hover {
-    background-color: #2980b9;
+  background-color: #2980b9;
 }

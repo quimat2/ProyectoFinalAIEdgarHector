@@ -16,7 +16,7 @@ if (isset($_POST['cerrar'])) {
 
 $usuario = $_SESSION['user'];
 
-// Consulta el tipo de usuario y el ID del profesor o alumno en la tabla alumnos
+// Consulta el tipo de usuario y el ID del alumno en la tabla alumnos
 $query = "SELECT tipo, alumno_id FROM alumnos WHERE usuario = :usuario";
 $stmt = $pdo->prepare($query);
 $stmt->bindParam(':usuario', $usuario);
@@ -25,124 +25,100 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
 $tipoUsuario = $row['tipo'];
 $alumno_id = $row['alumno_id'];
 
-if ($tipoUsuario == 'profesor') {
-    // Obtener la lista de clases del profesor
-    $query = "SELECT * FROM clases WHERE profesor_id = :profesor_id";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':profesor_id', $alumno_id);
-    $stmt->execute();
-    $clases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    // Obtener la lista de clases del alumno
-    $query = "SELECT c.* FROM clases c INNER JOIN alumnos_clases ac ON c.clase_id = ac.clase_id WHERE ac.alumno_id = :alumno_id";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':alumno_id', $alumno_id);
-    $stmt->execute();
-    $clases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+// Verificar si se ha enviado el formulario de calificación
+if (isset($_POST['calificar'])) {
+    $tareaID = $_POST['tarea_id'];
+    $calificacion = $_POST['calificacion'];
 
-// Calificar tarea (solo para profesores)
-if ($tipoUsuario == 'profesor' && isset($_POST['calificar'])) {
-    $tarea_id = $_POST['tarea_id'];
-    $calificaciones = $_POST['calificacion'];
-
-    // Actualizar la calificación de la tarea en la base de datos
-    foreach ($calificaciones as $alumno_id => $calificacion) {
-        $query = "UPDATE tareas SET calificacion = :calificacion WHERE tarea_id = :tarea_id AND alumno_id = :alumno_id";
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam(':calificacion', $calificacion);
-        $stmt->bindParam(':tarea_id', $tarea_id);
-        $stmt->bindParam(':alumno_id', $alumno_id);
-        $stmt->execute();
+    // Validar que la calificación sea un número válido
+    if (!is_numeric($calificacion) || $calificacion < 0 || $calificacion > 10) {
+        echo 'Calificación inválida. Debe ser un número entre 0 y 10.';
+        exit();
     }
 
-    // Redirigir a la página actual para evitar envío de formularios duplicados
-    header("location: calificar.php");
-    exit;
+    // Actualizar la calificación en la base de datos
+    $query = "UPDATE tareas SET calificacion = :calificacion WHERE tarea_id = :tarea_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':calificacion', $calificacion);
+    $stmt->bindParam(':tarea_id', $tareaID);
+    $stmt->execute();
+
+    // Mostrar un mensaje de éxito
+    echo 'Calificación guardada exitosamente.';
 }
+
+// Verificar si se ha enviado el formulario de eliminación de calificación
+if (isset($_POST['eliminar'])) {
+    $tareaID = $_POST['tarea_id'];
+
+    // Eliminar la calificación en la base de datos
+    $query = "UPDATE tareas SET calificacion = NULL WHERE tarea_id = :tarea_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':tarea_id', $tareaID);
+    $stmt->execute();
+
+    // Mostrar un mensaje de éxito
+    echo 'Calificación eliminada exitosamente.';
+}
+
+// Obtener todas las tareas asignadas al profesor
+$query = "SELECT tareas.tarea_id, tareas.titulo, tareas.descripcion, tareas.fecha_vencimiento, tareas.calificacion, alumnos.alumno_id, alumnos.nombre AS alumno_nombre
+          FROM tareas
+          INNER JOIN clases ON tareas.clase_id = clases.clase_id
+          INNER JOIN alumnos_clases ON clases.clase_id = alumnos_clases.clase_id
+          INNER JOIN alumnos ON alumnos_clases.alumno_id = alumnos.alumno_id
+          WHERE clases.profesor_id = :profesor_id";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':profesor_id', $alumno_id);
+$stmt->execute();
+$tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Calificar Tareas</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <link rel="stylesheet" href="./css/calificar.css">
+    <title>Calificar tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./css/calificar.css">
 </head>
 <body>
-  <header class="header">
-    <a href="index.php" class="logo">Mi App</a>
-  </header>
-  <div class="header">
-    <img src="./img/logo.png" alt="Logo de la escuela" class="logo">
-    <h1>Bienvenido a la página para calificar</h1>
-    <p class="welcome">Bienvenido: <?php echo htmlspecialchars($_SESSION['user']); ?></p>
-  </div>
+    <div class="header">
+        <img src="./img/logo.png" alt="Logo de la escuela" class="logo">
+        <h1>Calificar Tareas</h1>
+        <p class="welcome">Bienvenido: <?php echo htmlspecialchars($_SESSION['user']); ?></p>
+    </div>
 
-  <div class="cerrar-sesion">
-  <form method="post" action="">
-    <input type="submit" name="cerrar" value="Cerrar Sesión">
-  </form>
-</div>
-
-<?php if ($tipoUsuario == 'profesor') : ?>
-  <h3>Seleccione una clase:</h3>
-  <ul class="clase-lista">
-    <?php foreach ($clases as $clase) : ?>
-      <li class="clase-item">
-        <div class="clase-nombre"><?php echo $clase['nombre']; ?></div>
-        <div>
-          <a href="calificar.php?clase_id=<?php echo $clase['clase_id']; ?>">Ver Tareas</a>
-        </div>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-<?php elseif ($tipoUsuario == 'alumno') : ?>
-  <h3>Tus clases:</h3>
-  <ul class="clase-lista">
-    <?php foreach ($clases as $clase) : ?>
-      <li class="clase-item">
-        <div class="clase-nombre"><?php echo $clase['nombre']; ?></div>
-        <div>
-          <a href="calificar.php?clase_id=<?php echo $clase['clase_id']; ?>">Ver Tareas</a>
-        </div>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-
-  <?php if ($claseSeleccionada) : ?>
-    <h3>Tareas de la clase: <?php echo $claseSeleccionada['nombre']; ?></h3>
-    <?php if ($tareas) : ?>
-      <ul class="tareas-lista">
-        <?php foreach ($tareas as $tarea) : ?>
-          <li class="tareas-item">
-            <div class="tarea-titulo"><?php echo $tarea['titulo']; ?></div>
-            <?php if ($tarea['calificacion'] !== null) : ?>
-              <div class="tarea-calificacion">
-                Calificación: <?php echo $tarea['calificacion']; ?>
-              </div>
-            <?php else : ?>
-              <div class="tarea-calificacion">
-                <form method="post" action="">
-                  <input type="text" name="calificacion" placeholder="Calificación">
-                  <input type="hidden" name="tarea_id" value="<?php echo $tarea['tarea_id']; ?>">
-                  <input type="submit" name="calificar" value="Calificar">
+    <div class="tareas-container">
+        <?php foreach ($tareas as $tarea) { ?>
+            <div class="tarea-card">
+                <h2><?php echo htmlspecialchars($tarea['titulo']); ?></h2>
+                <p><?php echo htmlspecialchars($tarea['descripcion']); ?></p>
+                <p>Fecha de vencimiento: <?php echo htmlspecialchars($tarea['fecha_vencimiento']); ?></p>
+                <p>Alumno: <?php echo htmlspecialchars($tarea['alumno_nombre']); ?></p>
+                <p>Alumno ID: <?php echo htmlspecialchars($tarea['alumno_id']); ?></p>
+                <form action="calificar.php" method="post">
+                    <input type="hidden" name="tarea_id" value="<?php echo $tarea['tarea_id']; ?>">
+                    <label for="calificacion">Calificación:</label>
+                    <input type="number" name="calificacion" step="0.01" min="0" max="10" value="<?php echo $tarea['calificacion']; ?>">
+                    <button type="submit" name="calificar">Guardar Calificación</button>
                 </form>
-              </div>
-            <?php endif; ?>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-    <?php else : ?>
-      <p>No hay tareas disponibles.</p>
-    <?php endif; ?>
-  <?php endif; ?>
+                <form action="calificar.php" method="post">
+                    <input type="hidden" name="tarea_id" value="<?php echo $tarea['tarea_id']; ?>">
+                    <button type="submit" name="eliminar">Eliminar Calificación</button>
+                </form>
+            </div>
+        <?php } ?>
+    </div>
 
-<?php endif; ?>
+    <form action="inicio.php" method="post">
+        <input class="logout-button" type="submit" value="Cerrar sesión" name="cerrar">
+    </form>
 
-<?php if ($mensaje) : ?>
-  <div class="mensaje"><?php echo $mensaje; ?></div>
-<?php endif; ?>
-</div>
+    <form action="inicio.php" method="post">
+        <button class="home-button" type="submit" name="volver">
+            <i class="fas fa-home"></i>
+        </button>
+    </form>
+
 </body>
 </html>
