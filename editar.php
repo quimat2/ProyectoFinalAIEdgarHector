@@ -1,65 +1,103 @@
 <?php
 session_start();
-include_once 'conectar.php';
+
+include_once './includes/conectar.php';
 
 if (!isset($_SESSION['user'])) {
     header("location: index.php");
     exit;
 }
 
-$user = $_SESSION['user'];
-$consulta = $pdo->prepare('SELECT * FROM alumnos WHERE usuario = :usuario');
-$consulta->bindParam(':usuario', $user);
-$consulta->execute();
-$datos = $consulta->fetch(PDO::FETCH_ASSOC);
+if (isset($_POST['cerrar'])) {
+    session_destroy();
+    header("location: index.php");
+    exit;
+}
 
+$usuario = $_SESSION['user'];
+
+// Obtener información del alumno
+$query = "SELECT * FROM alumnos WHERE usuario = :usuario";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':usuario', $usuario);
+$stmt->execute();
+$alumno = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Actualizar los datos del alumno
 if (isset($_POST['guardar'])) {
-    $usuario = $_POST['usuario'];
-    $password = $_POST['password'];
     $nombre = $_POST['nombre'];
-    $tipo = $_POST['tipo'];
+    $password = $_POST['password'];
 
-    $actualizar = $pdo->prepare('UPDATE alumnos SET usuario = :usuario, password = :password, nombre = :nombre, tipo = :tipo WHERE usuario = :actual_usuario');
-    $actualizar->bindParam(':usuario', $usuario);
-    $actualizar->bindParam(':password', $password);
-    $actualizar->bindParam(':nombre', $nombre);
-    $actualizar->bindParam(':tipo', $tipo);
-    $actualizar->bindParam(':actual_usuario', $user);
+    $query = "UPDATE alumnos SET nombre = :nombre, password = :password WHERE alumno_id = :alumno_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':nombre', $nombre);
+    $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':alumno_id', $alumno['alumno_id']);
+    $stmt->execute();
 
-    if ($actualizar->execute()) {
-        $_SESSION['user'] = $usuario;
-        header("Location: inicio.php");
-        exit;
-    } else {
-        echo 'Error al actualizar el perfil.';
-    }
+    // Redirigir a la página de inicio después de guardar los cambios
+    header("location: inicio.php");
+    exit;
+}
+
+// Eliminar al alumno
+if (isset($_POST['eliminar'])) {
+    $query = "DELETE FROM alumnos WHERE alumno_id = :alumno_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':alumno_id', $alumno['alumno_id']);
+    $stmt->execute();
+
+    // Cerrar la sesión y redirigir a la página de inicio
+    session_destroy();
+    header("location: index.php");
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Perfil</title>
+    <title>Editar datos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./css/editar.css">
 </head>
 <body>
-    <h1>Editar Perfil</h1>
-    <form action="editar.php" method="post">
-        Usuario: <br>
-        <input type="text" name="usuario" value="<?php echo $datos['usuario']; ?>" required><br>
-        Contraseña: <br>
-        <input type="password" name="password" value="<?php echo $datos['password']; ?>" required><br>
-        Nombre: <br>
-        <input type="text" name="nombre" value="<?php echo $datos['nombre']; ?>" required><br>
-        Tipo: <br>
-        <select name="tipo" id="tipo">
-            <option value="profesor" <?php if ($datos['tipo'] == 'profesor') echo 'selected'; ?>>Profesor</option>
-            <option value="alumno" <?php if ($datos['tipo'] == 'alumno') echo 'selected'; ?>>Alumno</option>
-        </select><br><br>
-        <input type="submit" value="Guardar" name="guardar">
-        <a href="inicio.php">Cancelar</a>
+    <div class="header">
+        <img src="./img/logo.png" alt="Logo de la escuela" class="logo">
+        <h1>Editar datos</h1>
+        <p class="welcome">Bienvenido: <?php echo htmlspecialchars($_SESSION['user']); ?></p>
+    </div>
+
+    <div class="form-container">
+        <form action="editar.php" method="post">
+            <label for="usuario">Usuario:</label>
+            <input type="text" id="usuario" name="usuario" value="<?php echo htmlspecialchars($alumno['usuario']); ?>" disabled>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($alumno['nombre']); ?>">
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($alumno['password']); ?>">
+            <label for="tipo">Tipo:</label>
+            <input type="text" id="tipo" name="tipo" value="<?php echo htmlspecialchars($alumno['tipo']); ?>" disabled>
+            <label for="alumno_id">ID:</label>
+            <input type="text" id="alumno_id" name="alumno_id" value="<?php echo htmlspecialchars($alumno['alumno_id']); ?>" disabled>
+            <button class="save-button" type="submit" name="guardar">
+                <i class="fas fa-save"></i> Guardar cambios
+            </button>
+            <button class="delete-button" type="submit" name="eliminar" onclick="return confirm('¿Estás seguro de eliminar tu cuenta?')">
+                <i class="fas fa-trash"></i> Eliminar cuenta
+            </button>
+        </form>
+    </div>
+
+    <form action="inicio.php" method="post">
+        <input class="logout-button" type="submit" value="Cerrar sesión" name="cerrar">
     </form>
+
+    <form action="inicio.php" method="post">
+        <button class="home-button" type="submit" name="volver">
+            <i class="fas fa-home"></i>
+        </button>
+    </form>
+
 </body>
 </html>
