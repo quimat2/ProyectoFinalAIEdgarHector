@@ -88,5 +88,6 @@ $tipoUsuario = $row['tipo'];
   <form action="inicio.php" method="post">
     <input class="logout-button" type="submit" value="Cerrar sesión" name="cerrar">
   </form>
+  
 </body>
 </html>
