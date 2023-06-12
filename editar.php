@@ -25,13 +25,17 @@ $alumno = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Actualizar los datos del alumno
 if (isset($_POST['guardar'])) {
+    $usuario = $_POST['usuario'];
     $nombre = $_POST['nombre'];
     $password = $_POST['password'];
+    $tipo = $_POST['tipo'];
 
-    $query = "UPDATE alumnos SET nombre = :nombre, password = :password WHERE alumno_id = :alumno_id";
+    $query = "UPDATE alumnos SET usuario = :usuario, password = :password, nombre = :nombre, tipo = :tipo WHERE alumno_id = :alumno_id";
     $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':usuario', $usuario);
     $stmt->bindParam(':nombre', $nombre);
     $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':tipo', $tipo);
     $stmt->bindParam(':alumno_id', $alumno['alumno_id']);
     $stmt->execute();
 
@@ -71,13 +75,13 @@ if (isset($_POST['eliminar'])) {
     <div class="form-container">
         <form action="editar.php" method="post">
             <label for="usuario">Usuario:</label>
-            <input type="text" id="usuario" name="usuario" value="<?php echo htmlspecialchars($alumno['usuario']); ?>" disabled>
+            <input type="text" id="usuario" name="usuario" value="<?php echo htmlspecialchars($alumno['usuario']); ?>" >
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($alumno['nombre']); ?>">
             <label for="password">Contraseña:</label>
             <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($alumno['password']); ?>">
             <label for="tipo">Tipo:</label>
-            <input type="text" id="tipo" name="tipo" value="<?php echo htmlspecialchars($alumno['tipo']); ?>" disabled>
+            <input type="text" id="tipo" name="tipo" value="<?php echo htmlspecialchars($alumno['tipo']); ?>" >
             <label for="alumno_id">ID:</label>
             <input type="text" id="alumno_id" name="alumno_id" value="<?php echo htmlspecialchars($alumno['alumno_id']); ?>" disabled>
             <button class="save-button" type="submit" name="guardar">
