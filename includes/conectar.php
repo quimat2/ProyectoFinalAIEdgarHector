@@ -1,6 +1,6 @@
 <?php
 $server = 'localhost';
-$port = 8889;
+$port = 3306;  //Importante revisar el puerto
 $user = 'root';
 $password = 'root';
 $db = 'proyectofinalai';
